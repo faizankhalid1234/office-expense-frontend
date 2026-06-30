@@ -4,14 +4,12 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Loader2, Shield, BarChart3, Wallet, Sparkles } from "lucide-react";
+import { Loader2, Shield, BarChart3, Wallet, Sparkles, Lock } from "lucide-react";
 import { CompanyLogo } from "@/components/brand/company-logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { COMPANY_NAME } from "@/lib/constants";
-import { APP_LINKS } from "@/lib/app-urls";
-import { useMounted } from "@/hooks/use-mounted";
 
 interface AuthFormProps {
   mode: "login" | "register";
@@ -42,7 +40,6 @@ export function AuthForm({ mode }: AuthFormProps) {
 function AuthFormInner({ mode }: AuthFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const mounted = useMounted();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
 
@@ -59,8 +56,6 @@ function AuthFormInner({ mode }: AuthFormProps) {
           : "Sign in failed. Please try again.";
     toast.error(message);
   }, [mode, searchParams]);
-
-  const adminLoginUrl = APP_LINKS.adminLogin();
 
   function getRedirectPath(): string {
     const callback = searchParams.get("callbackUrl");
@@ -287,22 +282,10 @@ function AuthFormInner({ mode }: AuthFormProps) {
               )}
             </p>
 
-            {mode === "login" && (
-              <div className="mt-4 rounded-2xl bg-primary/10 p-3 text-[11px] text-primary">
-                <p className="font-semibold mb-1">Demo accounts</p>
-                <p>Admin: hafiz@gmail.com / 12345678</p>
-                <p className="mt-1">Employee: hafiz@gmail.com / 12345678</p>
-              </div>
-            )}
-
-            {mode === "login" && mounted && (
-              <p className="mt-4 text-center text-xs text-muted-foreground">
-                Admin site (port 4000):{" "}
-                <Link href={adminLoginUrl} className="font-semibold text-primary hover:underline">
-                  {adminLoginUrl}
-                </Link>
-              </p>
-            )}
+            <div className="mt-5 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground/80">
+              <Lock className="h-3 w-3 shrink-0" />
+              <span>Your data is encrypted and secure</span>
+            </div>
           </div>
         </div>
       </div>
