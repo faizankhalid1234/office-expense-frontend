@@ -1,15 +1,7 @@
 import { NextResponse } from "next/server";
 import { signIn } from "@/auth";
+import { handleSignInError } from "@/lib/handle-sign-in-error";
 import { loginSchema } from "@/lib/validations";
-
-function isRedirectError(error: unknown): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "digest" in error &&
-    String((error as { digest?: string }).digest).startsWith("NEXT_REDIRECT")
-  );
-}
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -48,9 +40,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    if (isRedirectError(error)) {
-      return NextResponse.json({ ok: true });
-    }
+    const handled = handleSignInError(error);
+    if (handled) return handled;
 
     console.error("[website/login] Session creation failed:", error);
     return NextResponse.json(
