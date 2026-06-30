@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -23,7 +23,23 @@ const features = [
   { icon: Shield, text: "Secure admin panel" },
 ];
 
+function AuthFormFallback() {
+  return (
+    <div className="flex min-h-screen min-h-[100dvh] items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    </div>
+  );
+}
+
 export function AuthForm({ mode }: AuthFormProps) {
+  return (
+    <Suspense fallback={<AuthFormFallback />}>
+      <AuthFormInner mode={mode} />
+    </Suspense>
+  );
+}
+
+function AuthFormInner({ mode }: AuthFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mounted = useMounted();
