@@ -32,6 +32,20 @@ export async function middleware(request: NextRequest) {
   const isWebsitePublic = WEBSITE_PUBLIC.some((route) => pathname.startsWith(route));
 
   if (isWebsitePublic) {
+    const sessionExpired = request.nextUrl.searchParams.get("error") === "session_expired";
+    if (sessionExpired) {
+      const response = NextResponse.next();
+      for (const name of [
+        "authjs.session-token",
+        "__Secure-authjs.session-token",
+        "next-auth.session-token",
+        "__Secure-next-auth.session-token",
+      ]) {
+        response.cookies.set(name, "", { path: "/", maxAge: 0 });
+      }
+      return response;
+    }
+
     if (isLoggedIn) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
